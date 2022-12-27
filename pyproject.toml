@@ -1,10 +1,15 @@
 [tool.poetry]
 name = "binance-history"
 version = "0.1.0"
-description = ""
+description = "Fetch binance historical klines or trades easily."
 authors = ["Meng Xiangzhuo <aumo@foxmail.com>"]
-readme = "README.md"
+readme = "README.rst"
 packages = [{ include = "binance_history" }]
+license = "MIT"
+homepage = "https://github.com/xzmeng/binance-history"
+repository = "https://github.com/xzmeng/binance-history"
+documentation = "https://github.com/xzmeng/binance-history"
+keywords = ["crypto", "cryptocurrency", "backtest", "backtesting", "BTC", "binance"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
