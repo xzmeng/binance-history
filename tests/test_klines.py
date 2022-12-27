@@ -5,8 +5,7 @@ from binance_history._exceptions import MissingTimeZone
 from binance_history import config
 
 
-def test_fetch_klines_1m_one_month(tmp_path):
-    config.CACHE_DIR = tmp_path
+def test_fetch_klines_1m_one_month():
     asset_type = "spot"
     symbol = "BTCUSDT"
     start = "2022-1-2 5:29"
@@ -55,7 +54,7 @@ def test_fetch_klines_1h_this_month():
     asset_type = "spot"
     symbol = "BTCUSDT"
     start = "2022-11-2 5:29"
-    end = Timestamp.now() - Timedelta(days=2)
+    end = Timestamp.now().replace(day=2)
     tz = "Asia/Shanghai"
 
     klines = fetch_klines(asset_type, symbol, "1h", start, end, tz)
