@@ -4,5 +4,7 @@ dist/
 
 .DS_Store
 
+.coverage
+
 t.py
 t.ipynb
