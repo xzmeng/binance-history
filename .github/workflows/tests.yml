@@ -26,7 +26,7 @@ jobs:
           cache: 'poetry'
 
       - name: Install dependencies
-        run: poetry install --only main --only test -vvv
+        run: poetry install --without dev -vvv
 
       - name: Test
         run: |
