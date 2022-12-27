@@ -1,8 +1,8 @@
 import pytest
-from binance_history import fetch_klines
-from pandas import Timestamp, Timedelta
-from binance_history._exceptions import MissingTimeZone
-from binance_history import config
+from pandas import Timestamp
+
+from binance_history import fetch_klines, fetch_agg_trades
+from binance_history.exceptions import MissingTimeZone
 
 
 def test_fetch_klines_1m_one_month():
@@ -103,3 +103,15 @@ def test_fetch_klines_missing_timezone():
 
     with pytest.raises(MissingTimeZone):
         fetch_klines(asset_type, symbol, "1m", start, end, tz=None)
+
+
+def test_fetch_agg_trades_one_month():
+    asset_type = "spot"
+    symbol = "ETCBTC"
+    start = "2022-1-2 8:29"
+    end = "2022-1-10 11:31"
+    tz = "Asia/Shanghai"
+
+    agg_trades = fetch_agg_trades(asset_type, symbol, start, end, tz)
+    assert agg_trades.index[0].day == 2
+    assert agg_trades.index[-1].day == 10

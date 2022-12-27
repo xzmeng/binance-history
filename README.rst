@@ -13,6 +13,19 @@ Binance History
 
 Fetch binance public data easily.
 
+Installation
+============
+
+.. code-block:: bash
+
+    $ pip install binance-history
+
+**Binance History** comes with a command line interface, if you want to use it you need install the extra dependencies:
+
+.. code-block:: bash
+
+    $ pip install 'binance-history[cli]'
+
 Usage
 =====
 
@@ -43,3 +56,35 @@ Usage
 
     [14401 rows x 8 columns]
 
+
+Command Line
+============
+
+.. code-block:: bash
+
+    $ bh --help
+    Usage: bh [OPTIONS]
+
+    Options:
+      --data-type [klines|aggTrades]  choose klines or aggTrades to download,
+                                      default to 'klines'
+      --asset-type [spot|futures-usd|futures-coin]
+                                      choose spot or futures data, default to
+                                      'spot'
+      --symbol TEXT                   The binance market pair name, e.g. BTCUSDT
+                                      [required]
+      --timeframe [1s|1m|3m|5m|15m|30m|1h|2h|4h|6h|8h|12h|1d|3d|1w|1M]
+                                      The timeframe of klines, default to '15m',
+                                      can be omitted if --data-type is not
+                                      'klines'
+      --start TEXT                    The start datetime, e.g. '2022-1-2 5:20'
+                                      [required]
+      --end TEXT                      The end datetime, e.g. '2022-1-25
+                                      [required]
+      --tz TEXT                       The timezone, default to 'Asia/Shanghai'
+      --output-path TEXT              The path you want to save the downloaded
+                                      data, support format: [csv, json, xlsx],
+                                      e.g. a.xlsx  [required]
+      --help                          Show this message and exit.
+
+    $ bh --start 2022-1-5 --end 2022-1-7 --symbol ETCBTC --output-path a.xlsx

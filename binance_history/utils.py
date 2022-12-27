@@ -1,16 +1,16 @@
-import os.path
-import os
-from pathlib import Path
-
-import pandas as pd
-import httpx
-import zipfile
 import io
-from pandas import Timestamp, DataFrame
+import os
+import os.path
+import zipfile
+from pathlib import Path
 from urllib.parse import urlparse
-from ._exceptions import NetworkError, MissingTimeZone
+
+import httpx
+import pandas as pd
+from pandas import Timestamp, DataFrame
+
 from . import config
-from loguru import logger
+from .exceptions import NetworkError
 
 
 def gen_data_url(
@@ -113,7 +113,7 @@ def download_data(data_type: str, data_tz: str, url: str) -> DataFrame:
     if data_type == "klines":
         return download_klines(data_tz, url)
     elif data_type == "aggTrades":
-        raise NotImplementedError
+        return download_agg_trades(data_tz, url)
     else:
         raise ValueError("data_type must be 'klines' or 'aggTrades'")
 
@@ -148,6 +148,25 @@ def download_klines(data_tz, url) -> DataFrame:
             del df["open_ms"]
             del df["close_ms"]
             df.set_index("open_datetime", inplace=True)
+    return df
+
+
+def download_agg_trades(data_tz, url) -> DataFrame:
+    resp = httpx.get(url)
+    with zipfile.ZipFile(io.BytesIO(resp.content)) as zipf:
+        csv_name = zipf.namelist()[0]
+        with zipf.open(csv_name, "r") as csvfile:
+            df = pd.read_csv(
+                csvfile,
+                usecols=[1, 2, 5, 6],
+                header=None,
+                names=["price", "quantity", "timestamp", "is_buyer_maker"],
+            )
+            df["datetime"] = pd.to_datetime(
+                df.timestamp, unit="ms", utc=True
+            ).dt.tz_convert(data_tz)
+            del df["timestamp"]
+            df.set_index("datetime", inplace=True)
     return df
 
 

@@ -25,7 +25,15 @@ coverage = "^7.0.1"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"
-black = {extras = ["d"], version = "^22.12.0"}
+black = { extras = ["d"], version = "^22.12.0" }
+
+
+[tool.poetry.group.cli.dependencies]
+click = "^8.1.3"
+openpyxl = "^3.0.10"
+
+[tool.poetry.scripts]
+bh = { callable = "binance_history.cli:main", extras = ["cli"] }
 
 [build-system]
 requires = ["poetry-core"]

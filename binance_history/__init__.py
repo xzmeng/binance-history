@@ -1,1 +1,2 @@
-from ._klines import fetch_klines
+from .api import fetch_klines, fetch_agg_trades, fetch_data
+from .cli import main

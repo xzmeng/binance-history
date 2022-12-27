@@ -1,5 +1,6 @@
-from binance_history import config
 import pytest
+
+from binance_history import config
 
 
 @pytest.fixture(scope="session", autouse=True)
