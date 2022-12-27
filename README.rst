@@ -8,8 +8,10 @@ Binance History
 .. image:: https://img.shields.io/codecov/c/github/xzmeng/binance-history
     :target: https://codecov.io/github/xzmeng/binance-history
 
-.. image:: https://img.shields.io/github/actions/workflow/status/xzmeng/binance-history/tests.yml
+.. image:: https://img.shields.io/github/actions/workflow/status/xzmeng/binance-history/tests.yml?label=tests
     :target: https://github.com/xzmeng/binance-history/actions
+
+Fetch binance public data easily.
 
 Usage
 =====
