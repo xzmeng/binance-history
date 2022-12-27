@@ -1,1 +1,1 @@
-from .klines import fetch_klines
+from ._klines import fetch_klines
