@@ -2,9 +2,15 @@ name: Tests
 
 on:
   push:
+    paths-ignore:
+      - 'README.rst'
     branches:
       - master
-
+  pull_request:
+    paths-ignore:
+      - 'README.rst'
+    branches:
+      - '**'
 jobs:
   Tests:
     runs-on: ubuntu-latest
