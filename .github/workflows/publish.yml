@@ -22,6 +22,11 @@ jobs:
           python-version: 3.11
           cache: 'poetry'
 
+      - name: Test
+        run: |
+          poetry install --without dev
+          poetry run pytest
+
       - name: Build
         run: poetry build
 
