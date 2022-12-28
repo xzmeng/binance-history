@@ -10,7 +10,6 @@ import pandas as pd
 from pandas import Timestamp, DataFrame
 
 from . import config
-from .exceptions import NetworkError
 
 
 def gen_data_url(
@@ -72,7 +71,11 @@ def gen_dates(
     last_month_url = gen_data_url(
         data_type, asset_type, "monthly", symbol, months[-1], timeframe=timeframe
     )
+
     resp = httpx.head(last_month_url)
+
+    assert resp.status_code in [404, 200], f"wrong status code: {resp.status_code}"
+
     if resp.status_code == 404:
         months.pop()
         days = pd.date_range(
@@ -82,8 +85,7 @@ def gen_dates(
         ).to_list()
     elif resp.status_code == 200:
         days = []
-    else:
-        raise NetworkError(resp.status_code)
+
     return months, days
 
 
@@ -97,8 +99,7 @@ def get_data(
     timeframe: str | None = None,
 ) -> DataFrame:
     if data_type == "klines":
-        if timeframe is None:
-            raise ValueError("timeframe cannot be None when data_type is 'klines'")
+        assert timeframe is not None
 
     url = gen_data_url(data_type, asset_type, freq, symbol, dt, timeframe)
 
@@ -110,12 +111,11 @@ def get_data(
 
 
 def download_data(data_type: str, data_tz: str, url: str) -> DataFrame:
+    assert data_type in ["klines", "aggTrades"]
     if data_type == "klines":
         return download_klines(data_tz, url)
     elif data_type == "aggTrades":
         return download_agg_trades(data_tz, url)
-    else:
-        raise ValueError("data_type must be 'klines' or 'aggTrades'")
 
 
 def download_klines(data_tz, url) -> DataFrame:
