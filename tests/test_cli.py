@@ -1,14 +1,13 @@
 import subprocess
 
 import pandas as pd
-import pytest
 
 
 def test_cli_fetch_klines(tmp_path):
     csv_path = tmp_path / "a.csv"
     json_path = tmp_path / "a.json"
     excel_path = tmp_path / "a.xlsx"
-    non_support_path = tmp_path / "a.xml"
+    non_support_path = tmp_path / "a.sb"
 
     cmd = (
         "bh --data-type klines --asset-type spot --symbol BTCUSDT --start 2022-1-2"
@@ -30,8 +29,14 @@ def test_cli_fetch_klines(tmp_path):
     subprocess.run(cmd.format(excel_path), shell=True, check=True)
     assert excel_path.exists()
 
-    with pytest.raises(subprocess.CalledProcessError):
-        subprocess.run(cmd.format(non_support_path), shell=True, check=True)
+    process = subprocess.run(
+        cmd.format(non_support_path),
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    assert process.returncode != 0
+    assert "not support extension name: sb" in process.stderr
 
 
 def test_cli_fetch_agg_trades(tmp_path):

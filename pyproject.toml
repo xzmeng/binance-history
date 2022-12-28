@@ -16,6 +16,7 @@ python = "^3.11"
 httpx = "^0.23.1"
 pandas = "^1.5.2"
 loguru = "^0.6.0"
+pendulum = "^2.1.2"
 
 
 [tool.poetry.group.test.dependencies]

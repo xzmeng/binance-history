@@ -1,4 +1,7 @@
+import sys
+
 import click
+from loguru import logger
 
 from .api import fetch_data
 
@@ -54,6 +57,7 @@ TIMEFRAMES = [
     help="The path you want to save the downloaded data, support format: [csv, json, xlsx], e.g. a.xlsx",
     required=True,
 )
+@logger.catch(onerror=lambda _: sys.exit(1))
 def main(data_type, asset_type, symbol, timeframe, start, end, tz, output_path):
     df = fetch_data(
         data_type=data_type,
@@ -64,14 +68,16 @@ def main(data_type, asset_type, symbol, timeframe, start, end, tz, output_path):
         end=end,
         tz=tz,
     )
-    if output_path.endswith(".csv"):
+    ext = output_path.split(".")[-1]
+
+    if ext == "csv":
         df.to_csv(output_path)
-    elif output_path.endswith(".json"):
+    elif ext == "json":
         df.to_json(output_path, orient="records")
-    elif output_path.endswith(".xlsx"):
+    elif ext == "xlsx":
         df.index = df.index.tz_convert(None)
         if "close_datetime" in df.columns:
             df["close_datetime"] = df.close_datetime.dt.tz_convert(None)
         df.to_excel(output_path)
     else:
-        raise NotImplemented
+        raise ValueError(f"not support extension name: {ext}")

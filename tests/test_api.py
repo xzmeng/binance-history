@@ -2,7 +2,6 @@ import pytest
 from pandas import Timestamp
 
 from binance_history import fetch_klines, fetch_agg_trades, fetch_data
-from binance_history.exceptions import MissingTimeZone
 
 
 def test_fetch_klines_1m_one_month():
@@ -12,7 +11,14 @@ def test_fetch_klines_1m_one_month():
     end = "2022-1-5 11:31"
     tz = "Asia/Shanghai"
 
-    klines = fetch_klines(asset_type, symbol, "1m", start, end, tz)
+    klines = fetch_klines(
+        asset_type=asset_type,
+        symbol=symbol,
+        timeframe="1m",
+        start=start,
+        end=end,
+        tz=tz,
+    )
 
     assert klines.index[0] == Timestamp(start, tz=tz)
     assert klines.close_datetime[0] == Timestamp("2022-1-2 5:29:59.999", tz=tz)
@@ -27,7 +33,14 @@ def test_fetch_klines_1m_many_months():
     end = "2022-2-3 11:31"
     tz = "Asia/Shanghai"
 
-    klines = fetch_klines(asset_type, symbol, "1m", start, end, tz)
+    klines = fetch_klines(
+        asset_type=asset_type,
+        symbol=symbol,
+        timeframe="1m",
+        start=start,
+        end=end,
+        tz=tz,
+    )
 
     assert klines.index[0] == Timestamp(start, tz=tz)
     assert klines.close_datetime[0] == Timestamp("2022-1-1 5:29:59.999", tz=tz)
@@ -42,7 +55,14 @@ def test_fetch_klines_15m_many_months():
     end = "2022-2-3 11:31"
     tz = "Asia/Shanghai"
 
-    klines = fetch_klines(asset_type, symbol, "15m", start, end, tz)
+    klines = fetch_klines(
+        asset_type=asset_type,
+        symbol=symbol,
+        timeframe="15m",
+        start=start,
+        end=end,
+        tz=tz,
+    )
 
     assert klines.index[0] == Timestamp("2022-1-1 5:30", tz=tz)
     assert klines.close_datetime[0] == Timestamp("2022-1-1 5:44:59.999", tz=tz)
@@ -57,7 +77,14 @@ def test_fetch_klines_1h_this_month():
     end = Timestamp.now().replace(day=2)
     tz = "Asia/Shanghai"
 
-    klines = fetch_klines(asset_type, symbol, "1h", start, end, tz)
+    klines = fetch_klines(
+        asset_type=asset_type,
+        symbol=symbol,
+        timeframe="1h",
+        start=start,
+        end=end,
+        tz=tz,
+    )
 
     assert klines.index[0] == Timestamp("2022-11-2 6:00", tz=tz)
     assert klines.close_datetime[0] == Timestamp("2022-11-2 6:59:59.999", tz=tz)
@@ -84,28 +111,22 @@ def test_fetch_klines_missing_timezone():
     tz = "Asia/Shanghai"
 
     fetch_klines(
-        asset_type,
-        symbol,
-        "1m",
-        Timestamp(start, tz=tz),
-        Timestamp(end, tz=tz),
+        asset_type=asset_type,
+        symbol=symbol,
+        timeframe="1m",
+        start=Timestamp(start, tz=tz),
+        end=Timestamp(end, tz=tz),
         tz=None,
     )
 
     fetch_klines(
-        asset_type,
-        symbol,
-        "1m",
-        Timestamp(start, tz=None),
-        Timestamp(end, tz=None),
+        asset_type=asset_type,
+        symbol=symbol,
+        timeframe="1m",
+        start=Timestamp(start, tz=None),
+        end=Timestamp(end, tz=None),
         tz=tz,
     )
-
-    with pytest.raises(MissingTimeZone):
-        fetch_klines(asset_type, symbol, "1m", start, end, tz=None)
-
-    with pytest.raises(MissingTimeZone):
-        fetch_agg_trades(asset_type, symbol, start, end, tz=None)
 
 
 def test_fetch_agg_trades_one_month():
