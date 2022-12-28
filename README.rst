@@ -20,7 +20,8 @@ Installation
 
     $ pip install binance-history
 
-**Binance History** comes with a command line interface, if you want to use it you need install the extra dependencies:
+**binance-history** comes with a command line interface,
+you need to install some extra dependencies to use it:
 
 .. code-block:: bash
 
