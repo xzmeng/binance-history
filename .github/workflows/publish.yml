@@ -4,35 +4,18 @@ on:
   push:
     tags:
       - '*.*.*'
-
 jobs:
   Publish:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Install Poetry
         run: pipx install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-          cache: 'poetry'
-
-      - name: Test
-        run: |
-          poetry install --without dev
-          poetry run pytest
-
       - name: Build
         run: poetry build
-
       - name: Check distributions
         run: ls -ahl dist
-
       - name: Publish to PyPI
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
