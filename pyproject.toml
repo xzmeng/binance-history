@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "binance-history"
-version = "0.1.3"
+version = "0.1.4"
 description = "Fetch binance historical klines or trades easily."
 authors = ["Meng Xiangzhuo <aumo@foxmail.com>"]
 readme = "README.rst"
