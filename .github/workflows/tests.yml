@@ -1,5 +1,4 @@
 name: Tests
-
 on:
   push:
     paths-ignore:
@@ -13,31 +12,27 @@ on:
       - '**'
 jobs:
   Tests:
+    name: "Python ${{ matrix.python-version }}"
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
+    
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Install Poetry
         run: pipx install poetry
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: "${{ matrix.python-version }}"
           cache: 'poetry'
-
       - name: Install dependencies
         run: poetry install --without dev -vvv
-
-      - name: Test
+      - name: Run tests
         run: |
           poetry run pytest --cov
           poetry run coverage xml
-
-      - name: Upload coverage to Codecov
+      - name: Upload coverage
         uses: codecov/codecov-action@v3
