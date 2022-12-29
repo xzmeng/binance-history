@@ -12,7 +12,7 @@ documentation = "https://github.com/xzmeng/binance-history"
 keywords = ["crypto", "cryptocurrency", "backtest", "backtesting", "BTC", "binance"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 httpx = "^0.23.1"
 pandas = "^1.5.2"
 loguru = "^0.6.0"
