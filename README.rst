@@ -6,9 +6,6 @@ Binance History
     :target: https://pypi.org/project/binance-history/
     :alt: pypi
 
-.. image:: https://img.shields.io/pypi/pyversions/binance-history
-   :alt: PyPI - Python Version
-
 .. image:: https://img.shields.io/github/license/xzmeng/binance-history
     :target: https://github.com/xzmeng/binance-history/blob/master/LICENSE
     :alt: license - MIT
