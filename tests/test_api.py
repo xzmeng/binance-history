@@ -1,42 +1,66 @@
+import datetime
+
+import pendulum
 import pytest
-from pandas import Timestamp
+from pandas import Timestamp, Timedelta
 
-from binance_history import fetch_klines, fetch_agg_trades, fetch_data
+from binance_history import fetch_klines, fetch_agg_trades
 
 
-def test_fetch_klines_1m_one_month():
-    asset_type = "spot"
-    symbol = "BTCUSDT"
-    start = "2022-1-2 5:29"
-    end = "2022-1-5 11:31"
-    tz = "Asia/Shanghai"
-
+@pytest.mark.parametrize(
+    ("symbol", "asset_type"),
+    [
+        ("BTCUSDT", "spot"),
+        ("BTCUSDT", "futures/um"),
+        ("BTCUSD_PERP", "futures/cm"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("start", "end", "tz"),
+    [
+        ("2022-1-2", "2022-1-20", "Asia/Shanghai"),
+        (
+            pendulum.datetime(2022, 1, 2, tz="Europe/Paris"),
+            pendulum.datetime(2022, 1, 20, tz="Europe/Paris"),
+            "Asia/Shanghai",
+        ),
+        (
+            datetime.datetime(2022, 1, 2),
+            datetime.datetime(2022, 1, 20),
+            "Asia/Shanghai",
+        ),
+    ],
+)
+@pytest.mark.parametrize("timeframe", ["1m"])
+def test_fetch_klines_1m_one_month(symbol, start, end, timeframe, asset_type, tz):
     klines = fetch_klines(
-        asset_type=asset_type,
         symbol=symbol,
-        timeframe="1m",
         start=start,
         end=end,
+        timeframe=timeframe,
+        asset_type=asset_type,
         tz=tz,
     )
 
-    assert klines.index[0] == Timestamp(start, tz=tz)
-    assert klines.close_datetime[0] == Timestamp("2022-1-2 5:29:59.999", tz=tz)
-    assert klines.index[-1] == Timestamp(end, tz=tz)
-    assert klines.close_datetime[-1] == Timestamp("2022-1-5 11:31:59.999", tz=tz)
+    first_opentime = Timestamp("2022-1-2", tz="Asia/Shanghai")
+    first_closetime = Timestamp("2022-1-2 0:0:59.999", tz="Asia/Shanghai")
+    last_opentime = Timestamp("2022-1-20", tz="Asia/Shanghai")
+    last_closetime = Timestamp("2022-1-20 0:0:59.999", tz="Asia/Shanghai")
+
+    assert klines.index[0] == first_opentime
+    assert klines.close_datetime[0] == first_closetime
+    assert klines.index[-1] == last_opentime
+    assert klines.close_datetime[-1] == last_closetime
 
 
 def test_fetch_klines_1m_many_months():
-    asset_type = "spot"
     symbol = "BTCUSDT"
     start = "2022-1-1 5:29"
     end = "2022-2-3 11:31"
     tz = "Asia/Shanghai"
 
     klines = fetch_klines(
-        asset_type=asset_type,
         symbol=symbol,
-        timeframe="1m",
         start=start,
         end=end,
         tz=tz,
@@ -49,18 +73,16 @@ def test_fetch_klines_1m_many_months():
 
 
 def test_fetch_klines_15m_many_months():
-    asset_type = "spot"
     symbol = "BTCUSDT"
     start = "2022-1-1 5:29"
     end = "2022-2-3 11:31"
     tz = "Asia/Shanghai"
 
     klines = fetch_klines(
-        asset_type=asset_type,
         symbol=symbol,
-        timeframe="15m",
         start=start,
         end=end,
+        timeframe="15m",
         tz=tz,
     )
 
@@ -70,19 +92,17 @@ def test_fetch_klines_15m_many_months():
     assert klines.close_datetime[-1] == Timestamp("2022-2-3 11:44:59.999", tz=tz)
 
 
-def test_fetch_klines_1h_this_month():
-    asset_type = "spot"
+def test_fetch_klines_1h_recent_days():
     symbol = "BTCUSDT"
-    start = "2022-11-2 5:29"
-    end = Timestamp.now().replace(day=2)
+    start = Timestamp("2022-11-2 5:29")
+    end = Timestamp.now() - Timedelta(days=3)
     tz = "Asia/Shanghai"
 
     klines = fetch_klines(
-        asset_type=asset_type,
         symbol=symbol,
-        timeframe="1h",
         start=start,
         end=end,
+        timeframe="1h",
         tz=tz,
     )
 
@@ -103,51 +123,23 @@ def test_fetch_klines_1h_this_month():
     )
 
 
-def test_fetch_klines_missing_timezone():
-    asset_type = "spot"
-    symbol = "BTCUSDT"
-    start = "2022-1-2 5:29"
-    end = "2022-1-5 11:31"
-    tz = "Asia/Shanghai"
-
-    fetch_klines(
-        asset_type=asset_type,
-        symbol=symbol,
-        timeframe="1m",
-        start=Timestamp(start, tz=tz),
-        end=Timestamp(end, tz=tz),
-        tz=None,
-    )
-
-    fetch_klines(
-        asset_type=asset_type,
-        symbol=symbol,
-        timeframe="1m",
-        start=Timestamp(start, tz=None),
-        end=Timestamp(end, tz=None),
-        tz=tz,
-    )
-
-
-def test_fetch_agg_trades_one_month():
-    asset_type = "spot"
-    symbol = "ETCBTC"
-    start = "2022-1-2 8:29"
-    end = "2022-1-10 11:31"
-    tz = "Asia/Shanghai"
-
-    agg_trades = fetch_agg_trades(asset_type, symbol, start, end, tz)
+@pytest.mark.parametrize(
+    ("start", "end", "tz"),
+    [
+        ("2022-10-2", "2022-10-19 23:59:59", "Asia/Shanghai"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("symbol", "asset_type"), [("ETCBTC", "spot"), ("LTCBUSD", "futures/um")]
+)
+def test_fetch_agg_trades_one_month(symbol, start, end, tz, asset_type):
+    if symbol == "ETCBTC":
+        assert False
+    agg_trades = fetch_agg_trades(symbol, start, end, asset_type, tz)
     assert agg_trades.index[0].day == 2
-    assert agg_trades.index[-1].day == 10
+    assert agg_trades.index[-1].day == 19
 
 
-def test_fetch_data_with_wrong_data_type():
-    data_type = "binance-btc-private-key"
-    asset_type = "spot"
-    symbol = "ETCBTC"
-    start = "2022-1-2 8:29"
-    end = "2022-1-10 11:31"
-    tz = "Asia/Shanghai"
-
-    with pytest.raises(ValueError):
-        fetch_data(data_type, asset_type, symbol, start, end, tz)
+def test_wrong_datetime_type():
+    with pytest.raises(TypeError):
+        fetch_klines("btcusdt", 3, 4)

@@ -1,3 +1,4 @@
+import datetime
 import io
 import os
 import os.path
@@ -7,9 +8,11 @@ from urllib.parse import urlparse
 
 import httpx
 import pandas as pd
+import pendulum
 from pandas import Timestamp, DataFrame
 
 from . import config
+from .exceptions import NetworkError, DataNotFound
 
 
 def gen_data_url(
@@ -47,6 +50,29 @@ def gen_data_url(
     return url
 
 
+def unify_datetime(input: str | datetime.datetime) -> datetime.datetime:
+    if isinstance(input, str):
+        return pendulum.parse(input, strict=False).replace(tzinfo=None)
+    elif isinstance(input, datetime.datetime):
+        return input.replace(tzinfo=None)
+    else:
+        raise TypeError(input)
+
+
+def exists_month(month_url):
+    try:
+        resp = httpx.head(month_url)
+    except (httpx.TimeoutException, httpx.NetworkError) as e:
+        raise NetworkError(e)
+
+    if resp.status_code == 200:
+        return True
+    elif resp.status_code == 404:
+        return False
+    else:
+        raise NetworkError(resp.status_code)
+
+
 def gen_dates(
     data_type: str,
     asset_type: str,
@@ -72,18 +98,26 @@ def gen_dates(
         data_type, asset_type, "monthly", symbol, months[-1], timeframe=timeframe
     )
 
-    resp = httpx.head(last_month_url)
+    if not exists_month(last_month_url):
+        daily_month = months.pop()
+        if len(months) > 1:
+            second_last_month_url = gen_data_url(
+                data_type,
+                asset_type,
+                "monthly",
+                symbol,
+                months[-1],
+                timeframe=timeframe,
+            )
+            if not exists_month(second_last_month_url):
+                daily_month = months.pop()
 
-    assert resp.status_code in [404, 200], f"wrong status code: {resp.status_code}"
-
-    if resp.status_code == 404:
-        months.pop()
         days = pd.date_range(
-            Timestamp(end.year, end.month, 1),
+            Timestamp(daily_month.year, daily_month.month, 1),
             end,
             freq="D",
         ).to_list()
-    elif resp.status_code == 200:
+    else:
         days = []
 
     return months, days
@@ -112,15 +146,27 @@ def get_data(
 
 def download_data(data_type: str, data_tz: str, url: str) -> DataFrame:
     assert data_type in ["klines", "aggTrades"]
+
+    try:
+        resp = httpx.get(url)
+    except (httpx.TimeoutException, httpx.NetworkError) as e:
+        raise NetworkError(e)
+
+    if resp.status_code == 200:
+        pass
+    elif resp.status_code == 404:
+        raise DataNotFound(url)
+    else:
+        raise NetworkError(url)
+
     if data_type == "klines":
-        return download_klines(data_tz, url)
+        return load_klines(data_tz, resp.content)
     elif data_type == "aggTrades":
-        return download_agg_trades(data_tz, url)
+        return load_agg_trades(data_tz, resp.content)
 
 
-def download_klines(data_tz, url) -> DataFrame:
-    resp = httpx.get(url)
-    with zipfile.ZipFile(io.BytesIO(resp.content)) as zipf:
+def load_klines(data_tz: str, content: bytes) -> DataFrame:
+    with zipfile.ZipFile(io.BytesIO(content)) as zipf:
         csv_name = zipf.namelist()[0]
         with zipf.open(csv_name, "r") as csvfile:
             df = pd.read_csv(
@@ -151,15 +197,14 @@ def download_klines(data_tz, url) -> DataFrame:
     return df
 
 
-def download_agg_trades(data_tz, url) -> DataFrame:
-    resp = httpx.get(url)
-    with zipfile.ZipFile(io.BytesIO(resp.content)) as zipf:
+def load_agg_trades(data_tz: str, content: bytes) -> DataFrame:
+    with zipfile.ZipFile(io.BytesIO(content)) as zipf:
         csv_name = zipf.namelist()[0]
         with zipf.open(csv_name, "r") as csvfile:
             df = pd.read_csv(
                 csvfile,
+                header=0,
                 usecols=[1, 2, 5, 6],
-                header=None,
                 names=["price", "quantity", "timestamp", "is_buyer_maker"],
             )
             df["datetime"] = pd.to_datetime(

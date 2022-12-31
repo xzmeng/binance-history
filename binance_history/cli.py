@@ -4,25 +4,8 @@ import click
 from loguru import logger
 
 from .api import fetch_data
-
-TIMEFRAMES = [
-    "1s",
-    "1m",
-    "3m",
-    "5m",
-    "15m",
-    "30m",
-    "1h",
-    "2h",
-    "4h",
-    "6h",
-    "8h",
-    "12h",
-    "1d",
-    "3d",
-    "1w",
-    "1M",
-]
+from .constants import TIMEFRAMES
+from .utils import unify_datetime
 
 
 @click.command()
@@ -34,7 +17,7 @@ TIMEFRAMES = [
 )
 @click.option(
     "--asset-type",
-    type=click.Choice(["spot", "futures-usd", "futures-coin"]),
+    type=click.Choice(["spot", "futures/um", "futures/cm"]),
     default="spot",
     help="choose spot or futures data, default to 'spot'",
 )
@@ -47,10 +30,12 @@ TIMEFRAMES = [
     type=click.Choice(TIMEFRAMES),
     help="The timeframe of klines, default to '15m', can be omitted if --data-type is not 'klines'",
 )
-@click.option("--start", required=True, help="The start datetime, e.g. '2022-1-2 5:20'")
-@click.option("--end", required=True, help="The end datetime, e.g. '2022-1-25")
+@click.option("--start", required=True, help="The start datetime, e.g. '2022-1-2 1:10'")
+@click.option("--end", required=True, help="The end datetime, e.g. '2022-1-25 2:20")
 @click.option(
-    "--tz", default="Asia/Shanghai", help="The timezone, default to 'Asia/Shanghai'"
+    "--tz",
+    default=None,
+    help="The tz database name of time zone, use your local time zone if omitted'",
 )
 @click.option(
     "--output-path",
@@ -64,9 +49,9 @@ def main(data_type, asset_type, symbol, timeframe, start, end, tz, output_path):
         asset_type=asset_type,
         symbol=symbol,
         timeframe=timeframe,
-        start=start,
-        end=end,
-        tz=tz,
+        start=unify_datetime(start),
+        end=unify_datetime(end),
+        tz_database_name=tz,
     )
     ext = output_path.split(".")[-1]
 
