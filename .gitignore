@@ -6,9 +6,11 @@ dist/
 .DS_Store
 
 .coverage
+.coverage.*
 coverage.xml
 
 docs/build
 
 t.py
 t.ipynb
+tt.ipynb
