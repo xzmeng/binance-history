@@ -10,6 +10,11 @@ from .utils import unify_datetime
 
 @click.command()
 @click.option(
+    "--symbol", required=True, help="The binance market pair name, e.g. BTCUSDT"
+)
+@click.option("--start", required=True, help="The start datetime, e.g. '2022-1-2 1:10'")
+@click.option("--end", required=True, help="The end datetime, e.g. '2022-1-25 2:20")
+@click.option(
     "--data-type",
     type=click.Choice(["klines", "aggTrades"]),
     default="klines",
@@ -22,16 +27,11 @@ from .utils import unify_datetime
     help="choose spot or futures data, default to 'spot'",
 )
 @click.option(
-    "--symbol", required=True, help="The binance market pair name, e.g. BTCUSDT"
-)
-@click.option(
     "--timeframe",
     default="15m",
     type=click.Choice(TIMEFRAMES),
     help="The timeframe of klines, default to '15m', can be omitted if --data-type is not 'klines'",
 )
-@click.option("--start", required=True, help="The start datetime, e.g. '2022-1-2 1:10'")
-@click.option("--end", required=True, help="The end datetime, e.g. '2022-1-25 2:20")
 @click.option(
     "--tz",
     default=None,

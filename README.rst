@@ -46,12 +46,10 @@ Klines
 
     >>> import binance_history as bh
     >>> klines = bh.fetch_klines(
-    ...     asset_type="spot",
     ...     symbol="BTCUSDT",
     ...     timeframe="1m",
     ...     start="2022-12-14",
     ...     end="2022-12-24",
-    ...     tz="Asia/Shanghai"
     ... )
                                    open      high       low     close     volume  quote_volume  trades                   close_datetime
     open_datetime
@@ -75,7 +73,6 @@ AggTrades
 .. code-block:: python
 
     >>> bh.fetch_agg_trades(
-    ...     asset_type="spot",
     ...     symbol="ETCBTC",
     ...     start="2022-11 01:05",
     ...     end="2022-11-25 3:20",
@@ -105,22 +102,23 @@ Command Line
     Usage: bh [OPTIONS]
 
     Options:
-      --data-type [klines|aggTrades]  choose klines or aggTrades to download,
-                                      default to 'klines'
-      --asset-type [spot|futures-usd|futures-coin]
-                                      choose spot or futures data, default to
-                                      'spot'
       --symbol TEXT                   The binance market pair name, e.g. BTCUSDT
                                       [required]
+      --start TEXT                    The start datetime, e.g. '2022-1-2 1:10'
+                                      [required]
+      --end TEXT                      The end datetime, e.g. '2022-1-25 2:20
+                                      [required]
+      --data-type [klines|aggTrades]  choose klines or aggTrades to download,
+                                      default to 'klines'
+      --asset-type [spot|futures/um|futures/cm]
+                                      choose spot or futures data, default to
+                                      'spot'
       --timeframe [1s|1m|3m|5m|15m|30m|1h|2h|4h|6h|8h|12h|1d|3d|1w|1M]
                                       The timeframe of klines, default to '15m',
                                       can be omitted if --data-type is not
                                       'klines'
-      --start TEXT                    The start datetime, e.g. '2022-1-2 5:20'
-                                      [required]
-      --end TEXT                      The end datetime, e.g. '2022-1-25
-                                      [required]
-      --tz TEXT                       The timezone, default to 'Asia/Shanghai'
+      --tz TEXT                       The tz database name of time zone, use your
+                                      local time zone if omitted'
       --output-path TEXT              The path you want to save the downloaded
                                       data, support format: [csv, json, xlsx],
                                       e.g. a.xlsx  [required]

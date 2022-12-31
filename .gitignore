@@ -8,5 +8,7 @@ dist/
 .coverage
 coverage.xml
 
+docs/build
+
 t.py
 t.ipynb
