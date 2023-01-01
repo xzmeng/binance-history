@@ -4,19 +4,23 @@ Binance History
 
 .. image:: https://img.shields.io/pypi/v/binance-history
     :target: https://pypi.org/project/binance-history/
-    :alt: pypi
+    :alt: pypi version
 
 .. image:: https://img.shields.io/github/license/xzmeng/binance-history
     :target: https://github.com/xzmeng/binance-history/blob/master/LICENSE
-    :alt: license - MIT
+    :alt: License - MIT
 
 .. image:: https://img.shields.io/codecov/c/github/xzmeng/binance-history
     :target: https://codecov.io/github/xzmeng/binance-history
-    :alt: coverage
+    :alt: Coverage
 
 .. image:: https://img.shields.io/github/actions/workflow/status/xzmeng/binance-history/tests.yml?label=tests
     :target: https://github.com/xzmeng/binance-history/actions
-    :alt: tests
+    :alt: Tests Status
+
+.. image:: https://readthedocs.org/projects/binance-history/badge/?version=latest
+    :target: https://binance-history.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 Fetch binance public data easily.
 

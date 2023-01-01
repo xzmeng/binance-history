@@ -133,8 +133,6 @@ def test_fetch_klines_1h_recent_days():
     ("symbol", "asset_type"), [("ETCBTC", "spot"), ("LTCBUSD", "futures/um")]
 )
 def test_fetch_agg_trades_one_month(symbol, start, end, tz, asset_type):
-    if symbol == "ETCBTC":
-        assert False
     agg_trades = fetch_agg_trades(symbol, start, end, asset_type, tz)
     assert agg_trades.index[0].day == 2
     assert agg_trades.index[-1].day == 19
