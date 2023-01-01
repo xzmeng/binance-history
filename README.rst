@@ -33,15 +33,9 @@ Installation
 
     $ pip install binance-history
 
-**binance-history** comes with a command line interface,
-you need to install some extra dependencies to use it:
-
-.. code-block:: bash
-
-    $ pip install 'binance-history[cli]'
-
 Usage
 =====
+`API docs <https://binance-history.readthedocs.io>`_
 
 Klines
 ------
@@ -98,7 +92,14 @@ AggTrades
 
 
 Command Line
-============
+------------
+**binance-history** comes with a command line interface,
+you need to install some extra dependencies to use it:
+
+.. code-block:: bash
+
+    $ pip install 'binance-history[cli]'
+
 
 .. code-block:: bash
 
