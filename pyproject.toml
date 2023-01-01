@@ -8,7 +8,7 @@ packages = [{ include = "binance_history" }]
 license = "MIT"
 homepage = "https://github.com/xzmeng/binance-history"
 repository = "https://github.com/xzmeng/binance-history"
-documentation = "https://github.com/xzmeng/binance-history"
+documentation = "https://binance-history.readthedocs.io/"
 keywords = ["crypto", "cryptocurrency", "backtest", "backtesting", "BTC", "binance"]
 
 [tool.poetry.dependencies]
