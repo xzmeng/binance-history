@@ -4,6 +4,7 @@ import os
 import os.path
 import zipfile
 from pathlib import Path
+from typing import Optional, Union
 from urllib.parse import urlparse
 
 import httpx
@@ -21,7 +22,7 @@ def gen_data_url(
     freq: str,
     symbol: str,
     dt: Timestamp,
-    timeframe: str | None = None,
+    timeframe: Optional[str] = None,
 ):
     url: str
     date_str: str
@@ -50,7 +51,7 @@ def gen_data_url(
     return url
 
 
-def unify_datetime(input: str | datetime.datetime) -> datetime.datetime:
+def unify_datetime(input: Union[str, datetime.datetime]) -> datetime.datetime:
     if isinstance(input, str):
         return pendulum.parse(input, strict=False).replace(tzinfo=None)
     elif isinstance(input, datetime.datetime):
@@ -79,7 +80,7 @@ def gen_dates(
     symbol: str,
     start: Timestamp,
     end: Timestamp,
-    timeframe: str | None = None,
+    timeframe: Optional[str] = None,
 ):
     assert start.tz is None and end.tz is None
 
@@ -130,7 +131,7 @@ def get_data(
     symbol: str,
     dt: Timestamp,
     data_tz: str,
-    timeframe: str | None = None,
+    timeframe: Optional[str] = None,
 ) -> DataFrame:
     if data_type == "klines":
         assert timeframe is not None
@@ -226,7 +227,7 @@ def save_data_to_disk(url: str, df: DataFrame) -> None:
     df.to_pickle(path)
 
 
-def load_data_from_disk(url: str) -> DataFrame | None:
+def load_data_from_disk(url: str) -> Union[DataFrame, None]:
     path = get_local_data_path(url)
     if os.path.exists(path):
         return pd.read_pickle(path)

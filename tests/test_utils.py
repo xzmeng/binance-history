@@ -56,7 +56,7 @@ def test_gen_dates():
         end,
         "1m",
     )
-    assert months[-1].month == end.month - 1
+    assert months[-1].month % 12 == end.month - 1
     assert len(days) == end.day
 
     with pytest.raises(ValueError):

@@ -5,15 +5,16 @@ import pendulum
 from pandas import DataFrame
 
 from .utils import gen_dates, get_data, unify_datetime
+from typing import Optional, Union
 
 
 def fetch_klines(
     symbol: str,
-    start: str | datetime,
-    end: str | datetime,
+    start: Union[str, datetime],
+    end: Union[str, datetime],
     timeframe: str = "1m",
     asset_type: str = "spot",
-    tz: str | None = None,
+    tz: Optional[str] = None,
 ) -> DataFrame:
     """
     :param symbol: The binance market pair name. e.g. ``'BTCUSDT'``.
@@ -47,10 +48,10 @@ def fetch_klines(
 
 def fetch_agg_trades(
     symbol: str,
-    start: str | datetime,
-    end: str | datetime,
+    start: Union[str, datetime],
+    end: Union[str, datetime],
     asset_type: str = "spot",
-    tz: str | None = None,
+    tz: Optional[str] = None,
 ) -> DataFrame:
     """
     :param symbol: The binance market pair name. e.g. ``'BTCUSDT'``.
@@ -85,8 +86,8 @@ def fetch_data(
     symbol: str,
     start: datetime,
     end: datetime,
-    tz_database_name: str | None = None,
-    timeframe: str | None = None,
+    tz_database_name: Optional[str] = None,
+    timeframe: Optional[str] = None,
 ) -> DataFrame:
     """
     if `start` or `end` is datetime, its timezone take the higher precedence
