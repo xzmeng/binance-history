@@ -24,7 +24,7 @@ Binance History
 
 Fetch binance public data easily.
 
-Supports Python **3.10+**.
+Supports Python **3.7+**.
 
 Installation
 ============
