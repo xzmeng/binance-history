@@ -11,6 +11,4 @@ coverage.xml
 
 docs/build
 
-t.py
-t.ipynb
-tt.ipynb
+t/
