@@ -22,6 +22,9 @@ Binance History
     :target: https://binance-history.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://img.shields.io/pypi/pyversions/binance-history
+   :alt: PyPI - Python Version
+
 Fetch binance public data easily.
 
 Supports Python **3.7+**.

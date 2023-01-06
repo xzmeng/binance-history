@@ -36,7 +36,7 @@ openpyxl = "^3.0.10"
 
 
 [tool.poetry.group.docs.dependencies]
-sphinx = "^6.0.0"
+sphinx = "^5.0.0"
 furo = "^2022.12.7"
 
 [tool.poetry.scripts]
