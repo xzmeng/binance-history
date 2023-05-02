@@ -16,7 +16,7 @@ def fetch_klines(
     asset_type: str = "spot",
     tz: Optional[str] = None,
 ) -> DataFrame:
-    """convinience function by calling ``fetch_data"""
+    """convinience function by calling ``fetch_data``"""
 
     return fetch_data(
         data_type="klines",
@@ -36,7 +36,7 @@ def fetch_agg_trades(
     asset_type: str = "spot",
     tz: Optional[str] = None,
 ) -> DataFrame:
-    """convinience function by calling ``fetch_data"""
+    """convinience function by calling ``fetch_data``"""
 
     return fetch_data(
         data_type="aggTrades",
@@ -82,9 +82,7 @@ def fetch_data(
 
     start, end = unify_datetime(start), unify_datetime(end)
 
-    start, end = pd.Timestamp(start, tz=tz), pd.Timestamp(
-        end, tz=tz
-    )
+    start, end = pd.Timestamp(start, tz=tz), pd.Timestamp(end, tz=tz)
 
     symbol = symbol.upper().replace("/", "")
 
@@ -97,15 +95,11 @@ def fetch_data(
         timeframe=timeframe,
     )
     monthly_dfs = [
-        get_data(
-            data_type, asset_type, "monthly", symbol, dt, tz, timeframe
-        )
+        get_data(data_type, asset_type, "monthly", symbol, dt, tz, timeframe)
         for dt in months
     ]
     daily_dfs = [
-        get_data(
-            data_type, asset_type, "daily", symbol, dt, tz, timeframe
-        )
+        get_data(data_type, asset_type, "daily", symbol, dt, tz, timeframe)
         for dt in days
     ]
     df = pd.concat(monthly_dfs + daily_dfs)
