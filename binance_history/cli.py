@@ -51,7 +51,7 @@ def main(data_type, asset_type, symbol, timeframe, start, end, tz, output_path):
         timeframe=timeframe,
         start=unify_datetime(start),
         end=unify_datetime(end),
-        tz_database_name=tz,
+        tz=tz,
     )
     ext = output_path.split(".")[-1]
 
