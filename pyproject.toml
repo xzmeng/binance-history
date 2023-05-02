@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "binance-history"
-version = "0.1.6"
+version = "0.1.7"
 description = "Fetch binance historical klines or trades easily."
 authors = ["Meng Xiangzhuo <aumo@foxmail.com>"]
 readme = "README.rst"
@@ -9,7 +9,14 @@ license = "MIT"
 homepage = "https://github.com/xzmeng/binance-history"
 repository = "https://github.com/xzmeng/binance-history"
 documentation = "https://binance-history.readthedocs.io/"
-keywords = ["crypto", "cryptocurrency", "backtest", "backtesting", "BTC", "binance"]
+keywords = [
+    "crypto",
+    "cryptocurrency",
+    "backtest",
+    "backtesting",
+    "BTC",
+    "binance",
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
