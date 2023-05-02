@@ -16,33 +16,16 @@ def fetch_klines(
     asset_type: str = "spot",
     tz: Optional[str] = None,
 ) -> DataFrame:
-    """
-    :param symbol: The binance market pair name. e.g. ``'BTCUSDT'``.
-    :param start:  The start datetime of requested data. If it's an instance of ``datetime.datetime``,
-        it's timezone is ignored. If it's a ``str``, it should be parsed by
-        `dateutil <https://github.com/dateutil/dateutil>`_, e.g. ``"2022-1-1 8:10"``.
-    :param end:  The end datetime of requested data. If it's an instance of ``datetime.datetime``,
-        it's timezone is ignored. If it's a ``str``, it should be parsed by
-        `dateutil <https://github.com/dateutil/dateutil>`_, e.g. ``"2022-1-2 8:10"``.
-    :param timeframe: The kline interval. e.g. "1m". see ``binance_history.constants.TIMEFRAMES``
-        to see the full list of available intervals.
-    :param asset_type: The asset type of requested data. It must be one of ``'spot'``, ``'futures/um'``, ``'futures/cm'``.
-    :param tz: Timezone of ``start``, ``end``, and the open/close datetime of the returned dataframe.
-        It should be a time zone name of `tz database <https://en.wikipedia.org/wiki/Tz_database>`_, e.g. "Asia/Shanghai".
-        Your can find a full list of available time zone names in
-        `List of tz database time zones <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List>`_.
-    :return: A pandas dataframe with columns `open`, `high`, `low`, `close`, `volume`, `trades`, `close_datetime`.
-        the dataframe's index is the open datetime of klines, the timezone of the datetime is set by ``tz_database_name``,
-        if it is None, your local timezone will be used.
-    """
+    """convinience function by calling ``fetch_data"""
+
     return fetch_data(
         data_type="klines",
         asset_type=asset_type,
         symbol=symbol,
-        start=unify_datetime(start),
-        end=unify_datetime(end),
+        start=start,
+        end=end,
         timeframe=timeframe,
-        tz_database_name=tz,
+        tz=tz,
     )
 
 
@@ -53,50 +36,54 @@ def fetch_agg_trades(
     asset_type: str = "spot",
     tz: Optional[str] = None,
 ) -> DataFrame:
+    """convinience function by calling ``fetch_data"""
+
+    return fetch_data(
+        data_type="aggTrades",
+        asset_type=asset_type,
+        symbol=symbol,
+        start=start,
+        end=end,
+        tz=tz,
+    )
+
+
+def fetch_data(
+    symbol: str,
+    asset_type: str,
+    data_type: str,
+    start: datetime,
+    end: datetime,
+    tz: Optional[str] = None,
+    timeframe: Optional[str] = None,
+) -> DataFrame:
     """
     :param symbol: The binance market pair name. e.g. ``'BTCUSDT'``.
     :param start:  The start datetime of requested data. If it's an instance of ``datetime.datetime``,
+    :param asset_type: The asset type of requested data. It must be one of ``'spot'``, ``'futures/um'``, ``'futures/cm'``.
+    :param data_type: The type of requested data. It must be one of ``'klines'``, ``'agg_trades'``.
         it's timezone is ignored. If it's a ``str``, it should be parsed by
         `dateutil <https://github.com/dateutil/dateutil>`_, e.g. ``"2022-1-1 8:10"``.
     :param end:  The end datetime of requested data. If it's an instance of ``datetime.datetime``,
         it's timezone is ignored. If it's a ``str``, it should be parsed by
         `dateutil <https://github.com/dateutil/dateutil>`_, e.g. ``"2022-1-2 8:10"``.
-    :param asset_type: The asset type of requested data. It must be one of ``'spot'``, ``'futures/um'``, ``'futures/cm'``.
     :param tz: Timezone of ``start``, ``end``, and the open/close datetime of the returned dataframe.
         It should be a time zone name of `tz database <https://en.wikipedia.org/wiki/Tz_database>`_, e.g. "Asia/Shanghai".
         Your can find a full list of available time zone names in
         `List of tz database time zones <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List>`_.
-    :return: A pandas dataframe with columns `price`, `quantity`, `is_buyer_maker`, the dataframe's index is
-        the datetime of the aggregated trades, the timezone of the datetime is set by ``tz_database_name``,
+    :param timeframe: The kline interval. e.g. "1m". see ``binance_history.constants.TIMEFRAMES``
+        to see the full list of available intervals.
+    :return: A pandas dataframe with columns `open`, `high`, `low`, `close`, `volume`, `trades`, `close_datetime`.
+        the dataframe's index is the open datetime of klines, the timezone of the datetime is set by ``tz``,
         if it is None, your local timezone will be used.
     """
-    return fetch_data(
-        data_type="aggTrades",
-        asset_type=asset_type,
-        symbol=symbol,
-        start=unify_datetime(start),
-        end=unify_datetime(end),
-        tz_database_name=tz,
-    )
+    if tz is None:
+        tz = pendulum.local_timezone().name
 
+    start, end = unify_datetime(start), unify_datetime(end)
 
-def fetch_data(
-    data_type: str,
-    asset_type: str,
-    symbol: str,
-    start: datetime,
-    end: datetime,
-    tz_database_name: Optional[str] = None,
-    timeframe: Optional[str] = None,
-) -> DataFrame:
-    """
-    if `start` or `end` is datetime, its timezone take the higher precedence
-    """
-    if tz_database_name is None:
-        tz_database_name = pendulum.local_timezone().name
-
-    start, end = pd.Timestamp(start, tz=tz_database_name), pd.Timestamp(
-        end, tz=tz_database_name
+    start, end = pd.Timestamp(start, tz=tz), pd.Timestamp(
+        end, tz=tz
     )
 
     symbol = symbol.upper().replace("/", "")
@@ -111,13 +98,13 @@ def fetch_data(
     )
     monthly_dfs = [
         get_data(
-            data_type, asset_type, "monthly", symbol, dt, tz_database_name, timeframe
+            data_type, asset_type, "monthly", symbol, dt, tz, timeframe
         )
         for dt in months
     ]
     daily_dfs = [
         get_data(
-            data_type, asset_type, "daily", symbol, dt, tz_database_name, timeframe
+            data_type, asset_type, "daily", symbol, dt, tz, timeframe
         )
         for dt in days
     ]
