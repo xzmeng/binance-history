@@ -11,4 +11,4 @@ __version__ = metadata.version(__package__)
 
 del metadata, sys
 
-__all__ = ["fetch_klines", "fetch_agg_trades"]
+__all__ = ["fetch_klines", "fetch_agg_trades", "fetch_data"]
