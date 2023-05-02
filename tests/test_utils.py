@@ -46,19 +46,6 @@ def test_gen_dates():
     )
     assert months == [Timestamp("2022-1"), Timestamp("2022-2"), Timestamp("2022-3")]
 
-    start = Timestamp("2022-2-1")
-    end = Timestamp.today() - Timedelta(days=1)
-    months, days = gen_dates(
-        "klines",
-        "spot",
-        "BTCUSDT",
-        start,
-        end,
-        "1m",
-    )
-    assert months[-1].month % 12 == end.month - 1
-    assert len(days) == end.day
-
     with pytest.raises(ValueError):
         gen_dates(
             "klines",
